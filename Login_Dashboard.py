@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
         
         else:
             user=self.usernamelineEdit.text()
-            print(user)
+            
             passw=self.passwordlineEdit.text()
             conn=sqlite3.connect('Driving_School.db')
             c=conn.cursor()

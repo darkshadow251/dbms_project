@@ -27,11 +27,11 @@ class Student_Details(QMainWindow):
         self.BackButton.clicked.connect(self.back)
         self.SaveButton.clicked.connect(self.save)
         date=self.dOBDateEdit.date()
-        print(date)
+        
         d=str(date)
         l=len(d)
         d=d[19:l-1].split(',')
-        print(d)
+        
     def save(self):
         if self.nameLineEdit.text()=="" or self.addressLineEdit.text()=="" or self.ageLineEdit.text()=="" or self.mobileNumberLineEdit.text()=="" or self.pickupLineEdit.text()=="" or self.dropLineEdit.text()=="":
             self.error.setText("Enter all inputs")

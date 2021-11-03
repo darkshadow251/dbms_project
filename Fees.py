@@ -1,4 +1,5 @@
 import sys
+from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QMainWindow, QMessageBox
@@ -118,6 +119,25 @@ class Session_View(QMainWindow):
         self.SaveButton.clicked.connect(self.save)
         self.DeleteButton.clicked.connect(self.delete)
         self.SessionLineEdit.setText(str(self.id))
+        
+        self.initialize()
+
+    def initialize(self):
+        conn = sqlite3.connect('Driving_School.db')
+        c = conn.cursor()
+        query="""SELECT * FROM session WHERE Session_id=? """
+        c.execute(query,(self.id))
+        se=c.fetchone()
+        self.pickupLineEdit.setText(str(se[4]))
+        self.SessionLineEdit.setText(str(se[0]))
+        self.dropLineEdit.setText(str(se[5]))
+        self.idLineEdit.setText(str(se[1]))
+        time=str(se[2])
+        time=time.split(':')
+        self.frtimeEdit.setTime(QTime(int(time[0]),int(time[1])))
+        time=str(se[3])
+        time=time.split(':')
+        self.totimeEdit.setTime(QTime(int(time[0]),int(time[1])))
         self.SessionLineEdit.setEnabled(False)
         self.pickupLineEdit.setEnabled(False)
         self.dropLineEdit.setEnabled(False)
@@ -125,6 +145,8 @@ class Session_View(QMainWindow):
         self.frtimeEdit.setEnabled(False)
         self.totimeEdit.setEnabled(False)
         self.SaveButton.setEnabled(False)
+
+
 
     def save(self):
         if self.pickupLineEdit.text()=="" or  self.dropLineEdit.text()=="" or self.idLineEdit.text()=="":
@@ -139,7 +161,7 @@ class Session_View(QMainWindow):
             fr=str(fr)
             l=len(fr)
             fr=fr[19:l-1].split(',')
-            print(fr)
+            
             mi=fr[1]
             timefr=fr[0]+":"+mi[1:]
             to=str(to)
@@ -201,7 +223,7 @@ class Session_Details(QMainWindow):
         self.ManageSessionButton.clicked.connect(self.managesession)
         self.table.setColumnWidth(4,250)
         self.table.setColumnWidth(5,250)
-        print(self.frtimeEdit_2.time())
+        
     def search(self):
         if self.idLineEdit_2.text()=="" and str(self.frtimeEdit_2.time())=="PyQt5.QtCore.QTime(0, 0)" and str(self.totimeEdit_2.time())=="PyQt5.QtCore.QTime(0, 0)":
             self.error1.setText("Enter the Trainer name")
@@ -320,7 +342,7 @@ class Session_Details(QMainWindow):
             fr=str(fr)
             l=len(fr)
             fr=fr[19:l-1].split(',')
-            print(fr)
+        
             mi=fr[1]
             timefr=fr[0]+":"+mi[1:]
             to=str(to)
