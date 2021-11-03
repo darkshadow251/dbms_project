@@ -109,17 +109,6 @@ class Student_Search(QMainWindow):
         self.BackButton.clicked.connect(self.back)
         self.SearchButton.clicked.connect(self.search)
         self.SeeDetailsButton.clicked.connect(self.details)
-        
-
-    
-        # row=0
-        # self.table.setRowCount(len(details))
-        # for session in details:
-        #     self.table.setItem(row , 0, QtWidgets.QTableWidgetItem(str(session[2])+" to "+str(session[3])))
-        #     self.table.setItem(row , 1, QtWidgets.QTableWidgetItem(str(session[4])))
-        #     self.table.setItem(row , 2, QtWidgets.QTableWidgetItem(str(session[5])))
-        #     row+=1
-
 
     def back(self):
         self.widget.setCurrentIndex(1)
@@ -130,7 +119,7 @@ class Student_Search(QMainWindow):
         query = """SELECT * FROM student WHERE Student_id=?"""
         c.execute(query,(self.idlineEdit.text(),))
         stu=c.fetchall()
-        print(stu)
+        
         if stu==[]:
             self.error_2.setText("Invalid Student ID")
             
@@ -138,7 +127,7 @@ class Student_Search(QMainWindow):
             
             self.view=Student_View(self.idlineEdit.text())
             self.view.show()
-
+            self.idlineEdit.setText("")
 
     def search(self):
         if self.namelineEdit.text()=="":
@@ -148,18 +137,23 @@ class Student_Search(QMainWindow):
             conn = sqlite3.connect('Driving_School.db')
             c = conn.cursor()
             query = """SELECT * FROM student WHERE Name=?"""
-            try:
-                c.execute(query,(name,))
-                st=c.fetchall()
+            
+            c.execute(query,(name,))
+            st=c.fetchall()
+            if st==[]:
+                self.error.setText("Invalid Student")
+            else:
                 row=0
+                self.table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
                 rowPosition = self.table.setRowCount(len(st))
                 for student in st:
                     self.table.setItem(row , 0, QtWidgets.QTableWidgetItem(str(student[0])))
                     self.table.setItem(row , 1, QtWidgets.QTableWidgetItem(str(student[1])))
                     self.table.setItem(row , 2, QtWidgets.QTableWidgetItem(str(student[6])))
                     row+=1
-            except:
-                self.error.setText("Invalid Student")
+
+                conn.commit()
+                conn.close()
 
 
 
@@ -187,6 +181,8 @@ class Student_View(QMainWindow):
         dialog=Student_Dialog()
         dialog.delete(self.id)
         x=dialog.exec_()
+
+        self.close()
 
     def save(self):
         if self.nameLineEdit.text()=="" or self.addressLineEdit.text()=="" or self.ageLineEdit.text()=="" or self.mobileNumberLineEdit.text()=="" or self.pickupLineEdit.text()=="" or self.dropLineEdit.text()=="":

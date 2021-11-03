@@ -52,10 +52,7 @@ class Trainer_View(QMainWindow):
     def save(self):
         if self.nameLineEdit.text()=="" or self.addressLineEdit.text()=="" or self.ageLineEdit.text()=="" or self.mobileNumberLineEdit.text()=="":
             self.error.setText("Enter all inputs")
-        elif self.table.rowCount==0:
-            self.error.setText("Enter atleast one Session")
-
-       
+    
         else:
             name = self.nameLineEdit.text()
             address = self.addressLineEdit.text()
@@ -63,39 +60,22 @@ class Trainer_View(QMainWindow):
             mobilenumber = int(self.mobileNumberLineEdit.text())
             conn = sqlite3.connect('Driving_School.db')
             c = conn.cursor()
-            query = """UPDATE trainer SET Name=?,Address=?,Age=?,MobileNumber=? WHERE Trainer_id=?"""
-            
-
+            query = """UPDATE trainer SET Name=?,Address=?,Age=?,MobileNumber=? WHERE Trainer_id=?"""       
             # try:
             c.execute(query,(name,address,age,mobilenumber,int(self.id)))
-            
-            
-               
-
             dialog=Trainer_Dialog()
             dialog.update(self.id)
             x=dialog.exec_()
-
-
             # except:
             #   self.error.setText("Error Ocurred")
             conn.commit()
             conn.close()
 
-
-
-
-
     def edit(self):
         self.nameLineEdit.setEnabled(True)
         self.addressLineEdit.setEnabled(True)
         self.ageLineEdit.setEnabled(True)
-        self.mobileNumberLineEdit.setEnabled(True)
-        self.pickupLineEdit.setEnabled(True)
-        self.dropLineEdit.setEnabled(True)
-        self.frtimeEdit.setEnabled(True)
-        self.totimeEdit.setEnabled(True)
-        self.AddSessionButton.setEnabled(True)
+        self.mobileNumberLineEdit.setEnabled(True)      
         self.SaveButton.setEnabled(True)
 
     def intialize(self):
@@ -130,21 +110,6 @@ class Trainer_View(QMainWindow):
         self.addressLineEdit.setEnabled(False)
         self.ageLineEdit.setEnabled(False)
         self.mobileNumberLineEdit.setEnabled(False)
-        self.pickupLineEdit.setEnabled(False)
-        self.dropLineEdit.setEnabled(False)
-        self.frtimeEdit.setEnabled(False)
-        self.totimeEdit.setEnabled(False)
-        self.AddSessionButton.setEnabled(False)
-
-
-
-
-        
-    #     self.BackButton.clicked.connect(self.back)
-
-    # def back(self):
-    #     self.widget.setCurrentIndex(1)
-
 
 class Trainer_Search(QMainWindow):
     def __init__(self, widget):
@@ -166,27 +131,45 @@ class Trainer_Search(QMainWindow):
             conn = sqlite3.connect('Driving_School.db')
             c = conn.cursor()
             query = """SELECT * FROM trainer WHERE Name=?"""
-            try:
-                c.execute(query,(name,))
-                tr=c.fetchall()
+            
+            c.execute(query,(name,))
+            tr=c.fetchall()
+            if tr==[]:
+                self.error.setText("Invalid Trainer")
+            else:
                 row=0
+                self.table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
                 self.table.setRowCount(len(tr))
                 for trainer in tr:
                     self.table.setItem(row , 0, QtWidgets.QTableWidgetItem(str(trainer[0])))
                     self.table.setItem(row , 1, QtWidgets.QTableWidgetItem(str(trainer[1])))
                     self.table.setItem(row , 2, QtWidgets.QTableWidgetItem(str(trainer[4])))
                     row+=1
-            except:
-                self.error.setText("Invalid Trainer")
+                conn.commit()
+                conn.close()
+
 
     def details(self):
         if self.lineEdit.text()=="":
             self.error1.setText("Enter the Trainer id")
 
         else:
-            # self.view=QtWidgets.QMainWindow()
-            self.view=Trainer_View(self.lineEdit.text())
-            self.view.show()
+           
+            tid=self.lineEdit.text()
+            conn = sqlite3.connect('Driving_School.db')
+            c = conn.cursor()
+            query = """SELECT * FROM trainer WHERE Trainer_id=?"""
+            try:
+                c.execute(query,(tid,))
+                t=c.fetchall()
+
+
+                self.view=Trainer_View(self.lineEdit.text())
+                self.view.show()
+                self.lineEdit.setText("")
+
+            except:
+                self.error1.setText("Invalid Trainer")
 
 
 
@@ -201,17 +184,9 @@ class Trainer_Details(QMainWindow):
     def back(self):
         self.widget.setCurrentIndex(1)
 
-
-    
-
-
-
     def save(self):
         if self.namelineEdit.text()=="" or self.addressLineEdit.text()=="" or self.ageLineEdit.text()=="" or self.mobileNumberLineEdit.text()=="":
-            self.error.setText("Enter all inputs")
-
-
-       
+            self.error.setText("Enter all inputs")    
         else:
             name = self.namelineEdit.text()
             address = self.addressLineEdit.text()
