@@ -49,6 +49,7 @@ class Dashboard(QMainWindow):
         self.FeesButton.clicked.connect(self.feesdetails)
         self.ExitButton.clicked.connect(self.exit)
         self.SessionButton.clicked.connect(self.session)
+        self.ExamButton.clicked.connect(self.exam)
         conn=sqlite3.connect('Driving_School.db')
         c=conn.cursor()
         query="""SELECT * FROM student"""
@@ -84,6 +85,9 @@ class Dashboard(QMainWindow):
 
     def session(self):
         self.widget.setCurrentIndex(7)
+
+    def exam(self):
+        self.widget.setCurrentIndex(8)
 
     def exit(self):
         self.widget.setCurrentIndex(0)
